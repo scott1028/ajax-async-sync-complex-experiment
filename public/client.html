@@ -10,7 +10,7 @@
     async-1: 0 second -> sync-1 5 seconds
     async-2: 6 second.
     >> 雖然 Async Sync 會影響全局其他 callback queue 的延遲時間。(可以避免其他 Render Task 破圖！)
-    >> 第 10 秒全部都會 Ready! 5 + (3async + 5sync) = 10.
+    >> 第 10 秒全部都會 Ready! 5 + (3async + 5sync + 3 async) = 10.
 </pre>
 <script>
     var ajaxFunction = function(async, seconds, success){
@@ -34,9 +34,13 @@
     ajaxFunction(true, 5, function(resp){
         console.log('async-2', window.performance.now() - start);
         console.log(resp);
-
+        ajaxFunction(true, 3, function(resp){
+            console.log('async-1-sync-1', window.performance.now() - start);
+            console.log(resp);
+        });
     });
 
+    // 比起 callback 在 Queue 內的排序更前面會被先執行
     setTimeout(function(){
         console.log('setTimeout', window.performance.now() - start);
     });
