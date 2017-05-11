@@ -10,7 +10,7 @@
     async-1: 0 second -> sync-1 5 seconds
     async-2: 6 second.
     >> 雖然 Async & Sync 混合 Server 會幾乎同時收到3個 Request！執行還是會併發，差別在於 Callback 的 invoked 時間。
-    >> 會影響全局其他 callback queue 的延遲時間。
+    >> 會影響全局其他 callback queue 的延遲時間。(可以避免其他 Render Task 破圖！)
     >> 第 6 秒全部都會 Ready!
 </pre>
 <script>
