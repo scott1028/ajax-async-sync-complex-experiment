@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+</head>
+<body>
+<p>只要一遇到 Ajax Sync Mode 將卡死全部的 Ajax Queue 直到當下的 Sync Task 完成才會坐下一個 Async, Sync 的工作！</p>
+<pre>
+    async-1: 0 second -> sync-1 5 seconds
+    async-2: 6 second.
+    >> 雖然 Async & Sync 混合 Server 會幾乎同時收到3個 Request！執行還是會併發，差別在於 Callback 的 invoked 時間。
+    >> 會影響全局其他 callback queue 的延遲時間。
+    >> 第 6 秒全部都會 Ready!
+</pre>
+<script>
+    var ajaxFunction = function(async, seconds, success){
+        $.ajax({
+            url: '/' + seconds,
+            success: success,
+            async: async
+        });
+    };
+
+    var start = window.performance.now();
+
+    ajaxFunction(true, 0, function(resp){
+        console.log('async-1', window.performance.now() - start);
+        ajaxFunction(false, 5, function(resp){
+            console.log('async-1-sync-1', window.performance.now() - start);
+            console.log(resp);
+        });
+    });
+
+    ajaxFunction(true, 6, function(resp){
+        console.log('async-2', window.performance.now() - start);
+        console.log(resp);
+
+    });
+
+    setTimeout(function(){
+        console.log('setTimeout', window.performance.now() - start);
+    });
+</script>
+</body>
+</html>
