@@ -9,9 +9,8 @@
 <pre>
     async-1: 0 second -> sync-1 5 seconds
     async-2: 6 second.
-    >> 雖然 Async & Sync 混合 Server 會幾乎同時收到3個 Request！執行還是會併發，差別在於 Callback 的 invoked 時間。
-    >> 會影響全局其他 callback queue 的延遲時間。(可以避免其他 Render Task 破圖！)
-    >> 第 6 秒全部都會 Ready!
+    >> 雖然 Async Sync 會影響全局其他 callback queue 的延遲時間。(可以避免其他 Render Task 破圖！)
+    >> 第 10 秒全部都會 Ready! 5 + (3async + 5sync) = 10.
 </pre>
 <script>
     var ajaxFunction = function(async, seconds, success){
@@ -24,15 +23,15 @@
 
     var start = window.performance.now();
 
-    ajaxFunction(true, 0, function(resp){
+    ajaxFunction(false, 5, function(resp){
         console.log('async-1', window.performance.now() - start);
-        ajaxFunction(false, 5, function(resp){
+        ajaxFunction(true, 3, function(resp){
             console.log('async-1-sync-1', window.performance.now() - start);
             console.log(resp);
         });
     });
 
-    ajaxFunction(true, 6, function(resp){
+    ajaxFunction(true, 5, function(resp){
         console.log('async-2', window.performance.now() - start);
         console.log(resp);
 
